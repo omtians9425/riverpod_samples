@@ -28,14 +28,6 @@ class MyHomePage extends StatefulWidget {
 final counterProvider = StateProvider((ref) => 0);
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,15 +41,21 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            // Consumer is a widget that allows you reading providers.
+            // You could also use the hook "useProvider" if you uses flutter_hooks
+            // Rebuild only the Text when counterProvider updates
+            Consumer(builder: (context, watch, _) {
+              // Listens to the value exposed by counterProvider
+              final count = watch(counterProvider).state;
+              return Text('$count');
+            }),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        // The read method is an utility to read a provider without listening to it (typically write)
+        // Similar to provider package's listen: false
+        onPressed: () => context.read(counterProvider).state++,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
